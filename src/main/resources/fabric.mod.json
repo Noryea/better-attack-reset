@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "better_attack_reset",
+  "version": "${version}",
+  "name": "Better Attack Reset",
+  "description": "",
+  "authors": [
+    "Noryea"
+  ],
+  "contact": {},
+  "license": "LGPL-3.0",
+  "environment": "*",
+  "accessWidener": "better_attack_reset.accesswidener",
+  "entrypoints": {
+    "main": [
+      "me.noryea.betterattack.BetterAttackReset"
+    ]
+  },
+  "mixins": [
+    "better_attack_reset.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.13",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
