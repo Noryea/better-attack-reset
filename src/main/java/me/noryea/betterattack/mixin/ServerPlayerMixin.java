@@ -35,9 +35,9 @@ public class ServerPlayerMixin implements ServerPlayerAccessor {
     }
 
     @Override
-    public void recordLastSwingActionTime() {
+    public void updateLastSwingActionTime() {
         // wrong: this.lastSwingActionTime = this.lastActionTime;
-        this.lastSwingActionTime = net.minecraft.Util.getMillis();
+        this.lastSwingActionTime = net.minecraft.util.Util.getMillis();
     }
 
     @Inject(method = "swing", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;resetAttackStrengthTicker()V", shift = At.Shift.BEFORE), cancellable = true)
