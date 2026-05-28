@@ -14,10 +14,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ServerPlayerMixin implements ServerPlayerAccessor {
 
     @Unique
-    private long lastSwingActionTime = 0L;
+    private volatile long lastSwingActionTime = 0L;
 
     @Unique
-    private long detectThreshold;
+    private volatile long detectThreshold;
 
     @Override
     public void setDetectThreshold(long threshold) {
