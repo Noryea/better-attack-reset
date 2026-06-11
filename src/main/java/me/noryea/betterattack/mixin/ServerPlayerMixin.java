@@ -43,9 +43,6 @@ public class ServerPlayerMixin implements ServerPlayerAccessor {
 
     @Inject(method = "swing", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;resetAttackStrengthTicker()V", shift = At.Shift.BEFORE), cancellable = true)
     private void swing(InteractionHand hand, CallbackInfo ci) {
-        if (shouldCancelStrengthReset(hand)) {
-            ci.cancel();
-            this.detectThreshold = -1L;
-        }
+        if (shouldCancelStrengthReset(hand)) ci.cancel();
     }
 }

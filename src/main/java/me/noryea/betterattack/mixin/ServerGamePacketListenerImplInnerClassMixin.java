@@ -1,10 +1,8 @@
 package me.noryea.betterattack.mixin;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import me.noryea.betterattack.BetterAttackReset;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;

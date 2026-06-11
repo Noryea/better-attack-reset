@@ -33,10 +33,17 @@ public abstract class ServerGamePacketListenerImplMixin {
     // 本模组针对使用雪球风弹、放置方块、实体交互的情况进行修复
 
     @Unique
-    private static final long USE_ITEM_THRESHOLD = 40L;
+    private static final long USE_ITEM_THRESHOLD = 50L;
 
     // use_item - 使用雪球、风弹等
-    @Inject(method = "handleUseItem", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/InteractionResult$Success;swingSource()Lnet/minecraft/world/InteractionResult$SwingSource;"))
+    @Inject(
+            method = "handleUseItem",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/InteractionResult$Success;swingSource()Lnet/minecraft/world/InteractionResult$SwingSource;",
+                    shift = At.Shift.AFTER
+            )
+    )
     public void handleUseItem(ServerboundUseItemPacket packet, CallbackInfo ci, @Local() InteractionResult.Success success) {
         // 只在主手&&交互会导致挥手时，才创建取消蓄力重置的检测窗口，因为
         // 1.在ServerPlayerAccessor的实现中副手交互一定会重置蓄力
@@ -48,7 +55,14 @@ public abstract class ServerGamePacketListenerImplMixin {
     }
 
     // use_item_on - 放置方块
-    @Inject(method = "handleUseItemOn", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/InteractionResult$Success;swingSource()Lnet/minecraft/world/InteractionResult$SwingSource;"))
+    @Inject(
+            method = "handleUseItemOn",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/InteractionResult$Success;swingSource()Lnet/minecraft/world/InteractionResult$SwingSource;",
+                    shift = At.Shift.AFTER
+            )
+    )
     public void handleUseItemOn(ServerboundUseItemOnPacket packet, CallbackInfo ci, @Local InteractionResult.Success success) {
         // 主手&&交互会导致挥手
         if (packet.getHand() == InteractionHand.MAIN_HAND && success.swingSource() != InteractionResult.SwingSource.NONE) {
@@ -57,8 +71,15 @@ public abstract class ServerGamePacketListenerImplMixin {
         }
     }
 
-    // interaction - 右键将进行交互
-    @Inject(method = "handleInteract", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V"))
+    // interaction - 右键或攻击实体
+    @Inject(
+            method = "handleInteract",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V",
+                    shift = At.Shift.AFTER
+            )
+    )
     public void beforeHandleInteract(ServerboundInteractPacket packet, CallbackInfo ci) {
         BetterAttackReset.setCurrentPlayer((ServerPlayerAccessor) this.player);
         // see: ServerGamePacketListenerImplInnerClassMixin
