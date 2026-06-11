@@ -2,6 +2,7 @@ package me.noryea.betterattack.mixin;
 
 import me.noryea.betterattack.player.ServerPlayerAccessor;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Util;
 import net.minecraft.world.InteractionHand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -37,11 +38,14 @@ public class ServerPlayerMixin implements ServerPlayerAccessor {
     @Override
     public void updateLastSwingActionTime() {
         // wrong: this.lastSwingActionTime = this.lastActionTime;
-        this.lastSwingActionTime = net.minecraft.util.Util.getMillis();
+        this.lastSwingActionTime = Util.getMillis();
     }
 
     @Inject(method = "swing", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;resetAttackStrengthTicker()V", shift = At.Shift.BEFORE), cancellable = true)
     private void swing(InteractionHand hand, CallbackInfo ci) {
-        if (shouldCancelStrengthReset(hand)) ci.cancel();
+        if (shouldCancelStrengthReset(hand)) {
+            ci.cancel();
+            this.detectThreshold = -1L;
+        }
     }
 }
