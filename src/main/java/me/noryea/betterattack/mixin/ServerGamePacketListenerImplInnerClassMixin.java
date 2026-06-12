@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ServerGamePacketListenerImplInnerClassMixin {
 
     @Unique
-    private static final long OTHER_THRESHOLD = 80L;
+    private static final long OTHER_THRESHOLD = 45L;
 
 
     @Inject(method = "performInteraction", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/InteractionResult$Success;swingSource()Lnet/minecraft/world/InteractionResult$SwingSource;"))
@@ -28,7 +28,6 @@ public abstract class ServerGamePacketListenerImplInnerClassMixin {
         var accessor = BetterAttackReset.getCurrentPlayer();
         if (accessor != null) {
             accessor.setDetectThreshold(OTHER_THRESHOLD);
-            accessor.updateLastSwingActionTime();
         }
     }
 }

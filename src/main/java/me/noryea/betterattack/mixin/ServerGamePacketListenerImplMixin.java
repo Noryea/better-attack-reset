@@ -33,7 +33,7 @@ public abstract class ServerGamePacketListenerImplMixin {
     // 本模组针对使用雪球风弹、放置方块、实体交互的情况进行修复
 
     @Unique
-    private static final long USE_ITEM_THRESHOLD = 50L;
+    private static final long USE_ITEM_THRESHOLD = 35L;
 
     // use_item - 使用雪球、风弹等
     @Inject(
@@ -50,7 +50,6 @@ public abstract class ServerGamePacketListenerImplMixin {
         // 2.需要排除不挥手的情况防止玩家同时左右键时能满蓄力连击
         if (packet.getHand() == InteractionHand.MAIN_HAND && success.swingSource() != InteractionResult.SwingSource.NONE) {
             ((ServerPlayerAccessor) this.player).setDetectThreshold(USE_ITEM_THRESHOLD);
-            ((ServerPlayerAccessor) this.player).updateLastSwingActionTime();
         }
     }
 
@@ -67,7 +66,6 @@ public abstract class ServerGamePacketListenerImplMixin {
         // 主手&&交互会导致挥手
         if (packet.getHand() == InteractionHand.MAIN_HAND && success.swingSource() != InteractionResult.SwingSource.NONE) {
             ((ServerPlayerAccessor) this.player).setDetectThreshold(USE_ITEM_THRESHOLD);
-            ((ServerPlayerAccessor) this.player).updateLastSwingActionTime();
         }
     }
 

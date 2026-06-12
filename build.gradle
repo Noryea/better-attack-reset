@@ -12,6 +12,11 @@ base {
 
 loom {
     accessWidenerPath = file("src/main/resources/better_attack_reset.accesswidener")
+
+    runConfigs.configureEach {
+        jvmArguments = List.of("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+AllowEnhancedClassRedefinition")
+        systemProperties = Map.of("mixin.debug.export", "true")
+    }
 }
 
 repositories {

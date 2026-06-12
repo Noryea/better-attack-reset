@@ -15,14 +15,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ServerPlayerMixin implements ServerPlayerAccessor {
 
     @Unique
+    private volatile long lastBeforeSwingActionTime = 0L;
+
+    @Unique
     private volatile long lastSwingActionTime = 0L;
 
     @Unique
-    private volatile long detectThreshold;
+    private long thresholdStartTimeMs;
+
+    @Unique
+    private long detectThreshold;
 
     @Override
     public void setDetectThreshold(long threshold) {
         this.detectThreshold = threshold;
+        this.thresholdStartTimeMs = Util.getMillis();
     }
 
     @Override
@@ -31,14 +38,29 @@ public class ServerPlayerMixin implements ServerPlayerAccessor {
     }
 
     @Override
+    public long getLastBeforeSwingActionTime() {
+        return this.lastBeforeSwingActionTime;
+    }
+
+    @Override
     public long getLastSwingActionTime() {
         return this.lastSwingActionTime;
     }
 
     @Override
+    public void updateLastBeforeSwingActionTime() {
+        this.lastBeforeSwingActionTime = Util.getMillis();
+    }
+
+    @Override
     public void updateLastSwingActionTime() {
-        // wrong: this.lastSwingActionTime = this.lastActionTime;
         this.lastSwingActionTime = Util.getMillis();
+    }
+
+    @Override
+    public boolean isInCancelDetectWindow() {
+        long millis = Util.getMillis();
+        return millis - thresholdStartTimeMs < 102L;
     }
 
     @Inject(method = "swing", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;resetAttackStrengthTicker()V", shift = At.Shift.BEFORE), cancellable = true)

@@ -4,6 +4,7 @@
   "package": "me.noryea.betterattack.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ConnectionMixin",
     "ServerGamePacketListenerImplInnerClassMixin",
     "ServerGamePacketListenerImplMixin",
     "ServerPlayerMixin"
