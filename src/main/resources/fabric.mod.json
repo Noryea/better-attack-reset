@@ -10,7 +10,6 @@
   "contact": {},
   "license": "LGPL-3.0",
   "environment": "*",
-  "accessWidener": "better_attack_reset.accesswidener",
   "entrypoints": {
     "main": [
       "me.noryea.betterattack.BetterAttackReset"
@@ -21,7 +20,6 @@
   ],
   "depends": {
     "fabricloader": ">=0.16.13",
-    "fabric": "*",
-    "minecraft": "${minecraft_version}"
+    "minecraft": ">=26.0"
   }
 }

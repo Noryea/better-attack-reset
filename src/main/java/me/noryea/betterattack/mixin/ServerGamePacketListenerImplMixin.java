@@ -1,7 +1,6 @@
 package me.noryea.betterattack.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.noryea.betterattack.BetterAttackReset;
 import me.noryea.betterattack.player.ServerPlayerAccessor;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
@@ -35,6 +34,9 @@ public abstract class ServerGamePacketListenerImplMixin {
     @Unique
     private static final long USE_ITEM_THRESHOLD = 35L;
 
+    @Unique
+    private static final long ENTITY_INTERACT_THRESHOLD = 45L;
+
     // use_item - 使用雪球、风弹等
     @Inject(
             method = "handleUseItem",
@@ -44,7 +46,7 @@ public abstract class ServerGamePacketListenerImplMixin {
                     shift = At.Shift.AFTER
             )
     )
-    public void handleUseItem(ServerboundUseItemPacket packet, CallbackInfo ci, @Local() InteractionResult.Success success) {
+    public void handleUseItem(ServerboundUseItemPacket packet, CallbackInfo ci, @Local InteractionResult.Success success) {
         // 只在主手&&交互会导致挥手时，才创建取消蓄力重置的检测窗口，因为
         // 1.在ServerPlayerAccessor的实现中副手交互一定会重置蓄力
         // 2.需要排除不挥手的情况防止玩家同时左右键时能满蓄力连击
@@ -69,22 +71,20 @@ public abstract class ServerGamePacketListenerImplMixin {
         }
     }
 
-    // interaction - 右键或攻击实体
+    // entity interaction - 右键实体
+    // MC 26.1+: ServerboundInteractPacket 不再使用 Handler 回调模式
+    // 交互逻辑内联到 handleInteract 中，攻击逻辑移至独立的 handleAttack 方法
     @Inject(
             method = "handleInteract",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V",
-                    shift = At.Shift.AFTER
+                    target = "Lnet/minecraft/server/level/ServerPlayer;interactOn(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/InteractionResult;"
             )
     )
-    public void beforeHandleInteract(ServerboundInteractPacket packet, CallbackInfo ci) {
-        BetterAttackReset.setCurrentPlayer((ServerPlayerAccessor) this.player);
-        // see: ServerGamePacketListenerImplInnerClassMixin
-    }
-
-    @Inject(method = "handleInteract", at = @At(value = "RETURN"))
-    public void afterHandleInteract(ServerboundInteractPacket packet, CallbackInfo ci) {
-        BetterAttackReset.setCurrentPlayer(null);
+    public void beforeEntityInteract(ServerboundInteractPacket packet, CallbackInfo ci, @Local InteractionHand hand) {
+        // 排除副手情况
+        if (hand != InteractionHand.OFF_HAND) {
+            ((ServerPlayerAccessor) this.player).setDetectThreshold(ENTITY_INTERACT_THRESHOLD);
+        }
     }
 }

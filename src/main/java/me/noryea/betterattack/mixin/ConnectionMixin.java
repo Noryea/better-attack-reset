@@ -4,7 +4,11 @@ import me.noryea.betterattack.player.ServerPlayerAccessor;
 import net.minecraft.network.Connection;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.*;
+import net.minecraft.network.protocol.game.ServerboundAttackPacket;
+import net.minecraft.network.protocol.game.ServerboundInteractPacket;
+import net.minecraft.network.protocol.game.ServerboundSwingPacket;
+import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket;
+import net.minecraft.network.protocol.game.ServerboundUseItemPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,6 +22,7 @@ public class ConnectionMixin {
     @Unique
     private static boolean shouldRecordTimestamp(Packet<?> packet) {
         return packet instanceof ServerboundInteractPacket ||
+                packet instanceof ServerboundAttackPacket ||
                 packet instanceof ServerboundUseItemPacket ||
                 packet instanceof ServerboundUseItemOnPacket;
     }
